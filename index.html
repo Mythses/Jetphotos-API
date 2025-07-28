@@ -1,0 +1,1591 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JetPhotos Explorer ✈️</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: hsl(220, 25%, 98%);
+            --foreground: hsl(225, 15%, 15%);
+            --card: hsl(0, 0%, 100%);
+            --card-foreground: hsl(225, 15%, 15%);
+            --primary: hsl(215, 90%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --primary-glow: hsl(215, 90%, 65%);
+            --secondary: hsl(220, 20%, 92%);
+            --secondary-foreground: hsl(225, 15%, 15%);
+            --muted: hsl(220, 15%, 95%);
+            --muted-foreground: hsl(225, 10%, 50%);
+            --accent: hsl(210, 85%, 60%);
+            --accent-foreground: hsl(0, 0%, 100%);
+            --border: hsl(220, 15%, 90%);
+            --input: hsl(220, 15%, 96%);
+            --radius: 0.75rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, hsl(220, 25%, 98%), hsl(215, 25%, 96%));
+            color: var(--foreground);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .header-icon {
+            height: 2.5rem;
+            width: 2.5rem;
+            color: var(--primary);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+        
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            max-width: 42rem;
+            margin: 0 auto;
+        }
+        
+        .search-form {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+        }
+        
+        .keywords-group {
+            grid-column: span 3;
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 0.5rem;
+            align-items: end;
+        }
+        
+        .dimensions-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--foreground);
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) - 0.25rem);
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: var(--input);
+            color: var(--foreground);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+        
+        /* Style for searchable select */
+        .searchable-select {
+            position: relative;
+        }
+        
+        .searchable-select input {
+            padding-right: 2rem;
+        }
+        
+        .searchable-select::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--muted-foreground);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: calc(var(--radius) - 0.25rem);
+            cursor: pointer;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn:hover {
+            background-color: hsl(215, 90%, 50%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--foreground);
+            box-shadow: none;
+        }
+        
+        .btn-outline:hover {
+            background: var(--muted);
+            border-color: hsl(220, 15%, 85%);
+        }
+        
+        .results-container {
+            margin-top: 1.5rem;
+        }
+        
+        .results-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .photo-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            border-color: hsl(220, 15%, 85%);
+        }
+        
+        .photo-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .photo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .photo-card:hover .photo-image img {
+            transform: scale(1.03);
+        }
+        
+        .photo-content {
+            padding: 1.25rem;
+        }
+        
+        .photo-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+            color: var(--foreground);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .photo-reg {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        .photo-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--muted-foreground);
+            background: var(--muted);
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+        }
+        
+        .meta-item i {
+            margin-right: 0.375rem;
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        
+        .photo-stats {
+            display: flex;
+            justify-content: space-between;
+            background: var(--muted);
+            padding: 0.75rem;
+            border-radius: calc(var(--radius) - 0.25rem);
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: var(--foreground);
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            border-radius: var(--radius);
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+            position: relative;
+            animation: modalFadeIn 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            width: 900px;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-image-container {
+            position: relative;
+            background: var(--muted);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+        
+        .modal-image {
+            width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .modal-info {
+            padding: 1.5rem;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .modal-grid-item {
+            font-size: 0.9375rem;
+        }
+        
+        .modal-grid-label {
+            font-size: 0.8125rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.25rem;
+        }
+        
+        .modal-grid-value {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .modal-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-stat {
+            flex: 1;
+            background: var(--muted);
+            padding: 1rem;
+            border-radius: calc(var(--radius) - 0.25rem);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .modal-stat-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-stat-label {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--card);
+            color: var(--muted-foreground);
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            z-index: 10;
+        }
+        
+        .close-modal:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+            border-color: hsl(220, 15%, 85%);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(74, 111, 165, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+            margin-top: 1rem;
+        }
+        
+        .loading-plane {
+            font-size: 1.5rem;
+            animation: planeBounce 2s infinite;
+            display: inline-block;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes planeBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        
+        .no-results i {
+            font-size: 2.5rem;
+            color: hsl(220, 15%, 85%);
+            margin-bottom: 1.5rem;
+        }
+        
+        .no-results h3 {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+        
+        .no-results p {
+            color: var(--muted-foreground);
+            font-size: 0.9375rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2.5rem 0;
+            gap: 0.75rem;
+        }
+        
+        .page-btn {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) - 0.25rem);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .page-btn:hover {
+            background: var(--muted);
+            border-color: hsl(220, 15%, 85%);
+        }
+        
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--muted);
+        }
+        
+        .page-info {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin: 0 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--card);
+            color: var(--muted-foreground);
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.8125rem;
+        }
+        
+        footer p {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        
+        .nav-btn {
+            background: var(--card);
+            color: var(--foreground);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .stat-icon {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .modal-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .link-icon {
+            margin-left: 0.5rem;
+            color: var(--primary);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .link-icon:hover {
+            color: var(--primary-glow);
+            transform: translateX(2px);
+        }
+        
+        .modal-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+        
+        .modal-loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(74, 111, 165, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-loading-text {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .keywords-group {
+                grid-column: span 1;
+                grid-template-columns: 1fr;
+            }
+            
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+            
+            .modal-image {
+                max-height: 50vh;
+            }
+            
+            .modal-nav {
+                padding: 0 0.5rem;
+            }
+            
+            .nav-btn {
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
+            
+            .modal-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .modal-stat {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 0.75rem;
+            }
+            
+            .modal-stat-value {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <i class="fas fa-plane header-icon"></i>
+                <h1>JetPhotos Explorer</h1>
+            </div>
+            <p class="subtitle">
+                Search and discover amazing aircraft photography from around the world. 
+                Browse thousands of high-quality aviation photos with detailed metadata.
+            </p>
+        </header>
+        
+        <form id="searchForm" class="search-form">
+            <div class="form-grid">
+                <div class="keywords-group">
+                    <div class="form-group">
+                        <label for="keywords-type">Keyword Field</label>
+                        <select id="keywords-type">
+                            <option value="all">All fields</option>
+                            <option value="aircraft">Aircraft</option>
+                            <option value="airline">Airline</option>
+                            <option value="airport">Airport</option>
+                            <option value="country">Country</option>
+                            <option value="photographer">Photographer</option>
+                            <option value="registration">Registration</option>
+                            <option value="serial">Serial No.</option>
+                            <option value="remarks">Remarks</option>
+                            <option value="camera">Camera</option>
+                            <option value="lens">Lens</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="keywords-contain">Keyword Match</label>
+                        <select id="keywords-contain">
+                            <option value="0">is exactly</option>
+                            <option value="1">starts w/</option>
+                            <option value="2">ends w/</option>
+                            <option value="3" selected>contains</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="keywords">Keyword Text</label>
+                        <input type="text" id="keywords" placeholder="e.g., Boeing 747">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aircraft">Aircraft Type</label>
+                    <select id="aircraft">
+                        <option value="all">All Aircraft</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="airline">Airline</label>
+                    <select id="airline">
+                        <option value="all">All Airlines</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="country">Country / Airport</label>
+                    <select id="country">
+                        <option value="all">All Countries</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="photographer">Photographer / Group</label>
+                    <select id="photographer">
+                        <option value="all">All Photographers</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="all">All Categories</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="year">Photo Year</label>
+                    <select id="year">
+                        <option value="all">All Years</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Dimensions</label>
+                    <div class="dimensions-group">
+                        <div>
+                            <label for="width">Min width (px)</label>
+                            <input type="number" id="width" min="0" placeholder="Min width">
+                        </div>
+                        <div>
+                            <label for="height">Min height (px)</label>
+                            <input type="number" id="height" min="0" placeholder="Min height">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sort">Sort By</label>
+                    <select id="sort">
+                        <option value="0">Most Recent</option>
+                        <option value="1">Most Views</option>
+                        <option value="2">Most Likes</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="submit" class="btn" id="searchBtn">
+                    <i class="fas fa-search"></i> Search Photos
+                </button>
+                <button type="button" class="btn btn-outline" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="loading-plane"><i class="fas fa-plane"></i></div>
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading aircraft data...</div>
+        </div>
+        
+        <div class="results-container" id="resultsContainer"></div>
+        
+        <div class="pagination" id="pagination">
+            <button class="page-btn" id="prevPage" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span class="page-info" id="pageInfo">Page 1</span>
+            <button class="page-btn" id="nextPage">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal" id="imageModal">
+        <div class="modal-nav">
+            <button class="nav-btn" id="prevPhoto">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-btn" id="nextPhoto">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div class="modal-content">
+            <div class="modal-image-container">
+                <div class="modal-loading" id="modalLoading">
+                    <div class="modal-loading-spinner"></div>
+                    <div class="modal-loading-text">Loading image...</div>
+                </div>
+                <img class="modal-image" id="modalImage" src="" alt="Aircraft Photo">
+            </div>
+            <div class="modal-info" id="modalInfo"></div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This is an unofficial interface for JetPhotos.com using their public data. All photos belong to their respective photographers.</p>
+        <p>For educational purposes only.</p>
+    </footer>
+    
+    <script>
+        // Configuration
+        const CORS_PROXY = "https://cp.rewis.workers.dev/?password=-11&url=";
+        const BASE_URL = "https://www.jetphotos.com";
+        
+        // Text file paths (you'll need to host these files)
+        const TEXT_FILES = {
+            aircraft: './aircraft.txt',
+            airlines: './airlines.txt',
+            countries: './countries.txt',
+            photographers: './photographers.txt',
+            categories: './categories.txt',
+            years: './years.txt'
+        };
+
+        // State
+        let currentPage = 1;
+        let currentResults = [];
+        let isLoading = false;
+        let currentModalIndex = 0;
+        let dropdownOptions = {}; // To store loaded options
+        
+        // DOM Elements
+        const searchForm = document.getElementById('searchForm');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const loadingElement = document.getElementById('loading');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalInfo = document.getElementById('modalInfo');
+        const closeModal = document.getElementById('closeModal');
+        const resetBtn = document.getElementById('resetBtn');
+        const prevPhotoBtn = document.getElementById('prevPhoto');
+        const nextPhotoBtn = document.getElementById('nextPhoto');
+        const modalLoading = document.getElementById('modalLoading');
+        
+        // Event Listeners
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentPage = 1;
+            fetchPhotos();
+        });
+        
+        prevPageBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchPhotos();
+            }
+        });
+        
+        nextPageBtn.addEventListener('click', function() {
+            currentPage++;
+            fetchPhotos();
+        });
+        
+        closeModal.addEventListener('click', function() {
+            imageModal.classList.remove('show');
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            searchForm.reset();
+            currentPage = 1;
+            // Re-populate dropdowns after reset if needed, or rely on initial load
+            populateDropdowns(); 
+            fetchPhotos();
+        });
+        
+        prevPhotoBtn.addEventListener('click', function() {
+            navigatePhotos(-1);
+        });
+        
+        nextPhotoBtn.addEventListener('click', function() {
+            navigatePhotos(1);
+        });
+        
+        // Close modal when clicking outside
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === imageModal) {
+                imageModal.classList.remove('show');
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (imageModal.classList.contains('show')) {
+                if (e.key === 'ArrowLeft') {
+                    navigatePhotos(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigatePhotos(1);
+                } else if (e.key === 'Escape') {
+                    imageModal.classList.remove('show');
+                }
+            }
+        });
+        
+        // Image loading handler
+        modalImage.addEventListener('load', function() {
+            modalLoading.style.display = 'none';
+        });
+        
+        modalImage.addEventListener('error', function() {
+            modalLoading.style.display = 'none';
+            modalImage.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available'; // Fallback for failed image load
+        });
+        
+        // Functions
+        function showLoading(show) {
+            isLoading = show;
+            loadingElement.style.display = show ? 'block' : 'none';
+            prevPageBtn.disabled = show || currentPage === 1;
+            nextPageBtn.disabled = show;
+        }
+        
+        function updatePagination() {
+            pageInfo.textContent = `Page ${currentPage}`;
+            prevPageBtn.disabled = currentPage === 1 || isLoading;
+            nextPageBtn.disabled = isLoading;
+        }
+
+        // Function to load text files
+        async function loadDropdownOptions() {
+            try {
+                for (const [key, file] of Object.entries(TEXT_FILES)) {
+                    const response = await fetch(file);
+                    if (!response.ok) throw new Error(`Failed to load ${file}: ${response.statusText}`);
+                    const text = await response.text();
+                    dropdownOptions[key] = text.split('\n').map(item => item.trim()).filter(item => item !== '');
+                }
+                populateDropdowns();
+            } catch (error) {
+                console.error('Error loading dropdown options:', error);
+                // Fallback to empty options if files can't be loaded
+                for (const key of Object.keys(TEXT_FILES)) {
+                    dropdownOptions[key] = [];
+                }
+                populateDropdowns(); // Still call to populate with default 'All' options
+            }
+        }
+
+        // Function to populate dropdowns with loaded options
+        function populateDropdowns() {
+            // Aircraft dropdown
+            const aircraftSelect = document.getElementById('aircraft');
+            aircraftSelect.innerHTML = '<option value="all">All Aircraft</option>';
+            dropdownOptions.aircraft.forEach(aircraft => {
+                const option = document.createElement('option');
+                option.value = aircraft;
+                option.textContent = aircraft;
+                aircraftSelect.appendChild(option);
+            });
+
+            // Airlines dropdown
+            const airlineSelect = document.getElementById('airline');
+            airlineSelect.innerHTML = '<option value="all">All Airlines</option>';
+            dropdownOptions.airlines.forEach(airline => {
+                const option = document.createElement('option');
+                option.value = airline;
+                option.textContent = airline;
+                airlineSelect.appendChild(option);
+            });
+
+            // Countries dropdown
+            const countrySelect = document.getElementById('country');
+            countrySelect.innerHTML = '<option value="all">All Countries</option>';
+            dropdownOptions.countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+
+            // Photographers dropdown
+            const photographerSelect = document.getElementById('photographer');
+            photographerSelect.innerHTML = '<option value="all">All Photographers</option>';
+            dropdownOptions.photographers.forEach(photographer => {
+                const option = document.createElement('option');
+                option.value = photographer;
+                option.textContent = photographer;
+                photographerSelect.appendChild(option);
+            });
+
+            // Categories dropdown
+            const categorySelect = document.getElementById('category');
+            categorySelect.innerHTML = '<option value="all">All Categories</option>';
+            dropdownOptions.categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            });
+
+            // Years dropdown
+            const yearSelect = document.getElementById('year');
+            yearSelect.innerHTML = '<option value="all">All Years</option>';
+            dropdownOptions.years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+        }
+        
+        function buildSearchUrl() {
+            const params = new URLSearchParams();
+            
+            params.set('search-type', 'Advanced');
+            params.set('page', currentPage);
+            params.set('sort-order', document.getElementById('sort').value);
+            
+            // Get form values
+            const keywords = document.getElementById('keywords').value.trim();
+            const keywordsType = document.getElementById('keywords-type').value;
+            const keywordsContain = document.getElementById('keywords-contain').value;
+            const aircraft = document.getElementById('aircraft').value;
+            const airline = document.getElementById('airline').value;
+            const country = document.getElementById('country').value;
+            const year = document.getElementById('year').value;
+            const photographer = document.getElementById('photographer').value;
+            const category = document.getElementById('category').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            
+            // Set parameters based on form values
+            if (keywords) {
+                params.set('keywords-contain', keywordsContain);
+                params.set('keywords-type', keywordsType);
+                params.set('keywords', keywords);
+            }
+            
+            params.set('aircraft', aircraft === 'all' ? 'all' : aircraft);
+            params.set('airline', airline === 'all' ? 'all' : airline);
+            params.set('country-location', country === 'all' ? 'all' : country);
+            params.set('photo-year', year === 'all' ? 'all' : year);
+            params.set('category', category === 'all' ? 'all' : category);
+            
+            if (photographer !== 'all') {
+                params.set('photographer-group', 'all');
+                params.set('photographer', photographer);
+            } else {
+                params.set('photographer-group', 'all');
+            }
+            
+            // Dimensions
+            params.set('width', width || '');
+            params.set('height', height || '');
+            
+            return `${BASE_URL}/showphotos.php?${params.toString()}`;
+        }
+        
+        async function fetchPhotos() {
+            showLoading(true);
+            updatePagination();
+            
+            const searchUrl = buildSearchUrl();
+            const proxyUrl = `${CORS_PROXY}${encodeURIComponent(searchUrl)}`;
+            
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('text/html')) {
+                    throw new Error('Received non-HTML response');
+                }
+                
+                const html = await response.text();
+                
+                if (!html.includes('<div id="results" class="results">')) {
+                    throw new Error('Invalid HTML structure received');
+                }
+                
+                currentResults = parseResults(html);
+                displayResults(currentResults);
+            } catch (error) {
+                console.error('Error fetching photos:', error);
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to load photos</h3>
+                        <p>There was an error fetching the requested data. Please try again.</p>
+                        <p><small>Error: ${error.message}</small></p>
+                    </div>
+                `;
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function parseResults(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const resultsDiv = doc.getElementById('results');
+            
+            if (!resultsDiv) {
+                console.warn("Could not find the 'results' div. This might mean the page structure has changed, or there are no results.");
+                return [];
+            }
+            
+            const results = resultsDiv.querySelectorAll('.result');
+            const planeImagesData = [];
+            
+            for (const result of results) {
+                const photoId = result.getAttribute('data-photo');
+                const img = result.querySelector('.result__photo');
+                const thumbnailUrl = img ? img.getAttribute('src') : '';
+                const fullImageUrl = thumbnailUrl ? thumbnailUrl.replace('/400/', '/full/') : '';
+                
+                // Initialize with default values
+                const imageInfo = {
+                    photoId: photoId || 'N/A',
+                    // Apply CORS proxy to image URLs here
+                    thumbnailUrl: thumbnailUrl ? `${CORS_PROXY}${encodeURIComponent(thumbnailUrl.startsWith('//') ? `https:${thumbnailUrl}` : thumbnailUrl)}` : '',
+                    imageUrl: fullImageUrl ? `${CORS_PROXY}${encodeURIComponent(fullImageUrl.startsWith('//') ? `https:${fullImageUrl}` : fullImageUrl)}` : '',
+                    registration: 'N/A',
+                    aircraftType: 'Unknown',
+                    airline: 'N/A',
+                    photographer: 'N/A',
+                    location: 'N/A',
+                    photoDate: 'N/A',
+                    uploadedDate: 'N/A',
+                    likes: '0',
+                    comments: '0',
+                    views: '0',
+                    photoPageUrl: '',
+                    photographerUrl: '',
+                    airlineUrl: '',
+                    registrationUrl: '',
+                    locationUrl: ''
+                };
+                
+                if (!photoId || !thumbnailUrl) {
+                    console.warn('Skipping result with missing photoId or thumbnailUrl');
+                    continue;
+                }
+                
+                // Extract registration (fix for "full info" text)
+                const regElements = result.querySelectorAll('.result__infoListText');
+                for (const el of regElements) {
+                    if (el.textContent.includes('Reg:')) {
+                        const regLink = el.querySelector('a[href*="/reg/"]');
+                        if (regLink) {
+                            const regText = regLink.textContent.trim();
+                            imageInfo.registration = regText.split(' ')[0]; // Get just the registration part
+                            imageInfo.registrationUrl = BASE_URL + regLink.getAttribute('href');
+                        } else {
+                            const regText = el.textContent.replace('Reg:', '').trim();
+                            imageInfo.registration = regText.split(' ')[0]; // Get just the registration part
+                        }
+                        break;
+                    }
+                }
+                
+                // Extract aircraft type
+                for (const el of regElements) {
+                    if (el.textContent.includes('Aircraft:')) {
+                        const aircraftLink = el.querySelector('a[href*="/type/"]');
+                        imageInfo.aircraftType = aircraftLink ? aircraftLink.textContent.trim() : 
+                            el.textContent.replace('Aircraft:', '').trim();
+                        break;
+                    }
+                }
+                
+                // Extract airline
+                for (const el of regElements) {
+                    if (el.textContent.includes('Airline:')) {
+                        const airlineLink = el.querySelector('a[href*="/airline/"]');
+                        if (airlineLink) {
+                            imageInfo.airline = airlineLink.textContent.trim();
+                            imageInfo.airlineUrl = BASE_URL + airlineLink.getAttribute('href');
+                        } else {
+                            imageInfo.airline = el.textContent.replace('Airline:', '').trim();
+                        }
+                        break;
+                    }
+                }
+                
+                // Extract photographer
+                const photographerEl = result.querySelector('.result__infoListText--photographer');
+                if (photographerEl) {
+                    const photographerLink = photographerEl.querySelector('a[href*="/photographer/"]');
+                    if (photographerLink) {
+                        imageInfo.photographer = photographerLink.textContent.trim();
+                        imageInfo.photographerUrl = BASE_URL + photographerLink.getAttribute('href');
+                    } else {
+                        imageInfo.photographer = photographerEl.textContent.replace('By:', '').replace('Photographer:', '').trim();
+                    }
+                }
+                
+                // Extract location
+                for (const el of regElements) {
+                    if (el.textContent.includes('Location:')) {
+                        const locationLink = el.querySelector('a[href*="/airport/"]');
+                        if (locationLink) {
+                            imageInfo.location = locationLink.textContent.trim();
+                            imageInfo.locationUrl = BASE_URL + locationLink.getAttribute('href');
+                        } else {
+                            imageInfo.location = el.textContent.replace('Location:', '').trim();
+                        }
+                        break;
+                    }
+                }
+                
+                // Extract photo date
+                for (const el of regElements) {
+                    if (el.textContent.includes('Photo date:')) {
+                        imageInfo.photoDate = el.textContent.replace('Photo date:', '').trim();
+                        break;
+                    }
+                }
+                
+                // Extract uploaded date
+                for (const el of regElements) {
+                    if (el.textContent.includes('Uploaded:')) {
+                        imageInfo.uploadedDate = el.textContent.replace('Uploaded:', '').trim();
+                        break;
+                    }
+                }
+                
+                // Stats and photo page URL
+                const photoLink = result.querySelector('a.result__photoLink');
+                if (photoLink) {
+                    imageInfo.photoPageUrl = BASE_URL + photoLink.getAttribute('href');
+                }
+                
+                const stats = result.querySelectorAll('.result__stat');
+                for (const stat of stats) {
+                    const text = stat.textContent.trim();
+                    const value = text.match(/\d+/)?.[0] || '0';
+                    
+                    if (text.includes('Likes:')) imageInfo.likes = value;
+                    else if (text.includes('Comments:')) imageInfo.comments = value;
+                    else if (text.includes('Views:')) imageInfo.views = value;
+                }
+                
+                // Fallback to alt text if we still have unknowns
+                if (img && img.alt) {
+                    const altText = img.alt;
+                    const parts = altText.split('-').map(p => p.trim());
+                    
+                    if (imageInfo.aircraftType === 'Unknown' && parts.length >= 2) {
+                        imageInfo.aircraftType = parts[1];
+                    }
+                    if (imageInfo.registration === 'N/A' && parts.length >= 1) {
+                        imageInfo.registration = parts[0];
+                    }
+                    if (imageInfo.airline === 'N/A' && parts.length >= 3) {
+                        imageInfo.airline = parts[2];
+                    }
+                }
+                
+                // Clean up aircraft type (remove special characters)
+                if (imageInfo.aircraftType) {
+                    imageInfo.aircraftType = imageInfo.aircraftType.replace(/[\\/:*?"<>|]/g, '').trim();
+                    if (!imageInfo.aircraftType) imageInfo.aircraftType = 'Unknown';
+                }
+                
+                planeImagesData.push(imageInfo);
+            }
+            
+            return planeImagesData;
+        }
+        
+        function displayResults(results) {
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-plane-slash"></i>
+                        <h3>No results found</h3>
+                        <p>Try adjusting your search criteria to find more photos.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const resultsHTML = `
+                <h2 class="results-header">Search Results (${results.length} photos)</h2>
+                <div class="photo-grid">
+                    ${results.map(photo => `
+                        <div class="photo-card">
+                            <div class="photo-image" data-id="${photo.photoId}">
+                                <img src="${photo.thumbnailUrl}" alt="${photo.registration} - ${photo.aircraftType}">
+                            </div>
+                            <div class="photo-content">
+                                <h3 class="photo-title">
+                                    ${photo.aircraftType}
+                                    <span class="photo-reg">${photo.registration}</span>
+                                </h3>
+                                
+                                <div class="photo-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-building"></i>
+                                        <span>${photo.airline}</span>
+                                        ${photo.airlineUrl ? `<a href="${photo.airlineUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${photo.location}</span>
+                                        ${photo.locationUrl ? `<a href="${photo.locationUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-camera"></i>
+                                        <span>${photo.photographer}</span>
+                                        ${photo.photographerUrl ? `<a href="${photo.photographerUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                                    </div>
+                                </div>
+                                
+                                <div class="photo-stats">
+                                    <div class="stat">
+                                        <div class="stat-value">
+                                            <i class="fas fa-heart stat-icon"></i>
+                                            ${photo.likes}
+                                        </div>
+                                        <div class="stat-label">Likes</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">
+                                            <i class="fas fa-comment stat-icon"></i>
+                                            ${photo.comments}
+                                        </div>
+                                        <div class="stat-label">Comments</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">
+                                            <i class="fas fa-eye stat-icon"></i>
+                                            ${photo.views}
+                                        </div>
+                                        <div class="stat-label">Views</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = resultsHTML;
+            
+            // Add click event to all image containers
+            document.querySelectorAll('.photo-image').forEach((el, index) => {
+                el.addEventListener('click', function() {
+                    currentModalIndex = index;
+                    showPhotoModal(results[index]);
+                });
+            });
+        }
+        
+        function showPhotoModal(photo) {
+            modalLoading.style.display = 'flex';
+            modalImage.src = photo.imageUrl; // This is already proxied in parseResults
+            modalImage.alt = `${photo.registration} - ${photo.aircraftType}`;
+            
+            modalInfo.innerHTML = `
+                <div class="modal-header">
+                    <h3 class="modal-title">${photo.aircraftType}</h3>
+                    <span class="photo-reg">
+                        ${photo.registration}
+                        ${photo.registrationUrl ? `<a href="${photo.registrationUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                    </span>
+                </div>
+                
+                <div class="modal-grid">
+                    <div class="modal-grid-item">
+                        <div class="modal-grid-label">Airline</div>
+                        <div class="modal-grid-value">
+                            ${photo.airline}
+                            ${photo.airlineUrl ? `<a href="${photo.airlineUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        </div>
+                    </div>
+                    <div class="modal-grid-item">
+                        <div class="modal-grid-label">Photographer</div>
+                        <div class="modal-grid-value">
+                            ${photo.photographer}
+                            ${photo.photographerUrl ? `<a href="${photo.photographerUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        </div>
+                    </div>
+                    <div class="modal-grid-item">
+                        <div class="modal-grid-label">Location</div>
+                        <div class="modal-grid-value">
+                            ${photo.location}
+                            ${photo.locationUrl ? `<a href="${photo.locationUrl}" target="_blank" class="link-icon"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        </div>
+                    </div>
+                    <div class="modal-grid-item">
+                        <div class="modal-grid-label">Photo Date</div>
+                        <div class="modal-grid-value">${photo.photoDate}</div>
+                    </div>
+                </div>
+                
+                <div class="modal-stats">
+                    <div class="modal-stat">
+                        <div class="modal-stat-value">
+                            <i class="fas fa-heart"></i>
+                            ${photo.likes}
+                        </div>
+                        <div class="modal-stat-label">Likes</div>
+                    </div>
+                    <div class="modal-stat">
+                        <div class="modal-stat-value">
+                            <i class="fas fa-comment"></i>
+                            ${photo.comments}
+                        </div>
+                        <div class="modal-stat-label">Comments</div>
+                    </div>
+                    <div class="modal-stat">
+                        <div class="modal-stat-value">
+                            <i class="fas fa-eye"></i>
+                            ${photo.views}
+                        </div>
+                        <div class="modal-stat-label">Views</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <a href="${photo.photoPageUrl}" class="btn" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> View on JetPhotos
+                    </a>
+                </div>
+            `;
+            
+            imageModal.classList.add('show');
+        }
+        
+        function navigatePhotos(direction) {
+            currentModalIndex += direction;
+            
+            // Wrap around if at beginning or end
+            if (currentModalIndex < 0) {
+                currentModalIndex = currentResults.length - 1;
+            } else if (currentModalIndex >= currentResults.length) {
+                currentModalIndex = 0;
+            }
+            
+            showPhotoModal(currentResults[currentModalIndex]);
+        }
+        
+        // Initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDropdownOptions(); // Now correctly calls the function to load from .txt files
+            fetchPhotos();
+        });
+    </script>
+</body>
+</html>
